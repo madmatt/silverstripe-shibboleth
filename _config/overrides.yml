@@ -1,0 +1,8 @@
+---
+Name: shibbolethconfig
+After:
+  - "#samlsettings"
+---
+Injector:
+  SAMLController: ShibSAMLController
+  SAMLConfService: ShibSAMLConfiguration
