@@ -75,6 +75,13 @@ class ShibSAMLController extends SAMLController
         // if there is no further sync (e.g. via LDAP)
         $member = Member::get()->filter($uniqueIdentifierField, $nameId)->limit(1)->first();
         
+        // If we allow fallback, check the provided NameID against the Email field (for sites that migrate from an old
+        // system that stored the NameID in the Email field e.g. Apache's mod_shib module).
+        // WARNING: This is *unsafe* unless you are certain that the NameID value will NEVER be re-used between users.
+        if (!$member && (bool)Config::inst()->get('SAMLConfiguration', 'allow_unsafe_email_fallback')) {
+            $member = Member::get()->filter('Email', $nameId)->limit(1)->first();
+        }
+
         if (!($member && $member->exists())
             && Config::inst()->get('SAMLConfiguration', 'allow_insecure_email_linking')
             && isset($fieldToClaimMap['Email'])
@@ -92,6 +99,9 @@ class ShibSAMLController extends SAMLController
             $member = new Member();
             $member->$uniqueIdentifierField = $nameId;
         }
+
+        // We always set/reset the NameID
+        $member->$uniqueIdentifierField = $nameId;
 
         foreach ($member->config()->get('claims_field_mappings', Config::EXCLUDE_EXTRA_SOURCES) as $claim => $field) {
             if (!isset($attributes[$claim][0])) {
