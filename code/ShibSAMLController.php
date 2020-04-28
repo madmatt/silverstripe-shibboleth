@@ -43,6 +43,7 @@ class ShibSAMLController extends SAMLController
         $error = $auth->getLastErrorReason();
         if (!empty($error)) {
             SS_Log::log($error, SS_Log::ERR);
+            SS_Log::log(sprintf('SAML Response: %s', $auth->getLastResponseXML()), SS_Log::INFO);
             Form::messageForForm("SAMLLoginForm_LoginForm", "Authentication error: '{$error}'", 'bad');
             Session::save();
 
