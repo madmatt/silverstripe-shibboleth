@@ -13,5 +13,10 @@
   "require": {
     "php": ">=7.1",
     "silverstripe/saml": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "MadMatt\\Shibboleth\\": "src"
+    }
   }
 }

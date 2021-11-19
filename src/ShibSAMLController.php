@@ -1,11 +1,22 @@
 <?php
 
+namespace MadMatt\Shibboleth;
+
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Error;
 use OneLogin\Saml2\ValidationError;
+use Psr\Log\LoggerInterface;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\ValidationException;
+use SilverStripe\SAML\Control\SAMLController;
+use SilverStripe\SAML\Helpers\SAMLHelper;
+use SilverStripe\SAML\Services\SAMLConfiguration;
+use SilverStripe\Security\Member;
 
 /**
- * Class ShibSAMLController
+ * Class MadMatt\Shibboleth\ShibSAMLController
  * 
  * Overrides the SAMLController class to fix the acs() method, which operates differently for Shibboleth compared to 
  * Active Directory.
@@ -26,7 +37,7 @@ class ShibSAMLController extends SAMLController
      * After this handler completes, we end up with a rudimentary Member record (which will be created on-the-fly
      * if not existent), with the user already logged in.
      *
-     * @return SS_HTTPResponse
+     * @return HTTPResponse
      * @throws Error
      * @throws ValidationException
      * @throws ValidationError
@@ -34,7 +45,7 @@ class ShibSAMLController extends SAMLController
     public function acs()
     {
         /** @var Auth $auth */
-        $auth = Injector::inst()->get('SAMLHelper')->getSAMLAuth();
+        $auth = Injector::inst()->get(SAMLHelper::class)->getSAMLAuth();
         $auth->processResponse();
 
         /** @var ShibSAMLConfiguration $samlConfig */
@@ -42,17 +53,31 @@ class ShibSAMLController extends SAMLController
 
         $error = $auth->getLastErrorReason();
         if (!empty($error)) {
-            SS_Log::log($error, SS_Log::ERR);
-            SS_Log::log(sprintf('SAML Response: %s', $auth->getLastResponseXML()), SS_Log::INFO);
-            Form::messageForForm("SAMLLoginForm_LoginForm", "Authentication error: '{$error}'", 'bad');
-            Session::save();
+            Injector::inst()->get(LoggerInterface::class)->error($error);
+            Injector::inst()->get(LoggerInterface::class)->info(sprintf('SAML Response: %s', $auth->getLastResponseXML()));
+            $session = $this->getRequest()->getSession();
+            $session->set(
+                'FormInfo.SAMLLoginForm_LoginForm.formError.message',
+                "Authentication error: '{$error}'"
+            );
+            $session->set(
+                'FormInfo.SAMLLoginForm_LoginForm.formError.type',
+                'bad'
+            );
 
             return $this->getRedirect();
         }
 
         if (!$auth->isAuthenticated()) {
-            Form::messageForForm("SAMLLoginForm_LoginForm", _t('Member.ERRORWRONGCRED'), 'bad');
-            Session::save();
+            $session = $this->getRequest()->getSession();
+            $session->set(
+                'FormInfo.SAMLLoginForm_LoginForm.formError.message',
+                _t('Member.ERRORWRONGCRED')
+            );
+            $session->set(
+                'FormInfo.SAMLLoginForm_LoginForm.formError.type',
+                'bad'
+            );
 
             return $this->getRedirect();
         }
@@ -66,7 +91,7 @@ class ShibSAMLController extends SAMLController
         $fieldToClaimMap = array_flip(Member::config()->get('claims_field_mappings', Config::EXCLUDE_EXTRA_SOURCES));
         $attributes = $auth->getAttributes();
         
-        $uniqueIdentifierField = Config::inst()->get('SAMLConfiguration', 'shib_unique_identifier_field');
+        $uniqueIdentifierField = Config::inst()->get(SAMLConfiguration::class, 'shib_unique_identifier_field');
         
         if (!$uniqueIdentifierField) {
             $uniqueIdentifierField = 'GUID';
@@ -79,25 +104,25 @@ class ShibSAMLController extends SAMLController
         // If we allow fallback, check the provided NameID against the Email field (for sites that migrate from an old
         // system that stored the NameID in the Email field e.g. Apache's mod_shib module).
         // WARNING: This is *unsafe* unless you are certain that the NameID value will NEVER be re-used between users.
-        if (!$member && (bool)Config::inst()->get('SAMLConfiguration', 'allow_unsafe_email_fallback')) {
+        if (!$member && (bool)Config::inst()->get(SAMLConfiguration::class, 'allow_unsafe_email_fallback')) {
             $member = Member::get()->filter('Email', $nameId)->limit(1)->first();
         }
 
         if (!($member && $member->exists())
-            && Config::inst()->get('SAMLConfiguration', 'allow_insecure_email_linking')
+            && Config::inst()->get(SAMLConfiguration::class, 'allow_insecure_email_linking')
             && isset($fieldToClaimMap['Email'])
         ) {
             // If there is no member found via GUID and we allow linking via email, search by email
             $member = Member::get()->filter('Email', $attributes[$fieldToClaimMap['Email']])->limit(1)->first();
             
             if (!($member && $member->exists())) {
-                $member = new Member();
+                $member = Member::create();
             }
 
             $member->$uniqueIdentifierField = $nameId;
         } elseif (!($member && $member->exists())) {
             // If the member doesn't exist and we don't allow linking via email, then create a new member
-            $member = new Member();
+            $member = Member::create();
             $member->$uniqueIdentifierField = $nameId;
         }
 
@@ -106,12 +131,11 @@ class ShibSAMLController extends SAMLController
 
         foreach ($member->config()->get('claims_field_mappings', Config::EXCLUDE_EXTRA_SOURCES) as $claim => $field) {
             if (!isset($attributes[$claim][0])) {
-                SS_Log::log(
+                Injector::inst()->get(LoggerInterface::class)->warning(
                     sprintf(
                         'Claim rule \'%s\' configured in claims_field_mappings, but wasn\'t passed through. Please check IdP claim rules defined in YML.',
                         $claim
-                    ),
-                    SS_Log::WARN
+                    )
                 );
 
                 continue;
