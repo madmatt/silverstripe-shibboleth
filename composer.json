@@ -12,10 +12,6 @@
   ],
   "require": {
     "php": ">=7.1",
-    "silverstripe/framework": "^3.7",
-    "silverstripe/activedirectory": "^3"
-  },
-  "extra": {
-    "installer-name": "shibboleth"
+    "silverstripe/saml": "^2.0"
   }
 }
