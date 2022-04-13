@@ -8,3 +8,4 @@ SilverStripe\Core\Injector\Injector:
     class: MadMatt\Shibboleth\ShibSAMLController
   SilverStripe\SAML\Services\SAMLConfiguration:
     class: MadMatt\Shibboleth\ShibSAMLConfiguration
+  SAMLConfService: MadMatt\Shibboleth\ShibSAMLConfiguration
