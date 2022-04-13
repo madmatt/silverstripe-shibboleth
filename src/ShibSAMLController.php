@@ -49,7 +49,7 @@ class ShibSAMLController extends SAMLController
         $auth->processResponse();
 
         /** @var ShibSAMLConfiguration $samlConfig */
-        $samlConfig = Injector::inst()->get(SAMLConfService::class);
+        $samlConfig = Injector::inst()->get('SAMLConfService');
 
         $error = $auth->getLastErrorReason();
         if (!empty($error)) {
