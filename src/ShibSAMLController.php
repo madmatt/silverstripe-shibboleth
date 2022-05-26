@@ -13,6 +13,7 @@ use SilverStripe\ORM\ValidationException;
 use SilverStripe\SAML\Control\SAMLController;
 use SilverStripe\SAML\Helpers\SAMLHelper;
 use SilverStripe\SAML\Services\SAMLConfiguration;
+use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 
@@ -154,7 +155,8 @@ class ShibSAMLController extends SAMLController
         // calling this, as any onAfterWrite hooks that attempt to update LDAP won't
         // have the Username field available yet for new Member records, and fail.
         // Both SAML and LDAP identify Members by the GUID field.
-        Security::setCurrentUser($member);
+        $identityStore = Injector::inst()->get(IdentityStore::class);
+        $identityStore->logIn($member);
 
         return $this->getRedirect();
     }
