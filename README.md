@@ -21,7 +21,7 @@ Do this by adding the following to your YML configuration:
 ```yaml
 # The below will use the eduPersonPrincipalName attribute to determine the NameID
 # See a full list of oid -> 'friendly name' mappings here: https://incommon.org/community-practices-and-standards/object-identifier-registrations/
-MadMatt\Shibboleth\SAMLConfiguration:
+Madmatt\Shibboleth\SAMLConfiguration:
   nameid_override_attribute: "urn:oid:1.3.6.1.4.1.5923.1.1.1.6"
 ```
 
@@ -32,6 +32,6 @@ By default, the Shibboleth module does not change how the NameID is compared to 
 This may be useful in a situation where you are migrating from the old SilverStripe `auth_external` module, using the Apache `mod_shib` module (which populates `$_SERVER['REMOTE_USER']` by default).
 
 ```yaml
-MadMatt\Shibboleth\SAMLConfiguration:
+Madmatt\Shibboleth\SAMLConfiguration:
   shib_unique_identifier_field: Email
 ```
