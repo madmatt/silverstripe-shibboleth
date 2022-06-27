@@ -5,7 +5,7 @@ After:
 ---
 SilverStripe\Core\Injector\Injector:
   SilverStripe\SAML\Control\SAMLController:
-    class: MadMatt\Shibboleth\ShibSAMLController
+    class: Madmatt\Shibboleth\ShibSAMLController
   SilverStripe\SAML\Services\SAMLConfiguration:
-    class: MadMatt\Shibboleth\ShibSAMLConfiguration
-  SAMLConfService: MadMatt\Shibboleth\ShibSAMLConfiguration
+    class: Madmatt\Shibboleth\ShibSAMLConfiguration
+  SAMLConfService: Madmatt\Shibboleth\ShibSAMLConfiguration

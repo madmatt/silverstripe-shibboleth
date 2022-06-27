@@ -1,6 +1,6 @@
 <?php
 
-namespace MadMatt\Shibboleth;
+namespace Madmatt\Shibboleth;
 
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Error;
@@ -18,7 +18,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 
 /**
- * Class MadMatt\Shibboleth\ShibSAMLController
+ * Class Madmatt\Shibboleth\ShibSAMLController
  * 
  * Overrides the SAMLController class to fix the acs() method, which operates differently for Shibboleth compared to 
  * Active Directory.

@@ -1,12 +1,12 @@
 <?php
 
-namespace MadMatt\Shibboleth;
+namespace Madmatt\Shibboleth;
 
 use OneLogin\Saml2\Auth;
 use SilverStripe\SAML\Services\SAMLConfiguration;
 
 /**
- * Class MadMatt\Shibboleth\ShibSAMLConfiguration
+ * Class Madmatt\Shibboleth\ShibSAMLConfiguration
  *
  * Provides additional configuration functionality for Shibboleth-backed identity providers (IdP).
  */

@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "MadMatt\\Shibboleth\\": "src"
+      "Madmatt\\Shibboleth\\": "src"
     }
   }
 }
