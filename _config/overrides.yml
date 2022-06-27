@@ -3,6 +3,9 @@ Name: shibbolethconfig
 After:
   - "#samlsettings"
 ---
-Injector:
-  SAMLController: ShibSAMLController
-  SAMLConfService: ShibSAMLConfiguration
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\SAML\Control\SAMLController:
+    class: Madmatt\Shibboleth\ShibSAMLController
+  SilverStripe\SAML\Services\SAMLConfiguration:
+    class: Madmatt\Shibboleth\ShibSAMLConfiguration
+  SAMLConfService: Madmatt\Shibboleth\ShibSAMLConfiguration

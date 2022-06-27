@@ -1,8 +1,8 @@
 # silverstripe-shibboleth
 
-Extends the [silverstripe-activedirectory](https://github.com/silverstripe/silverstripe-activedirectory) module for SilverStripe 3 to provide [Shibboleth](https://wiki.shibboleth.net/confluence/display/IDP30/Home) specific bindings, and allow the silverstripe-activedirectory module to be used with a Shibboleth-backed identity provider (IdP).
+Extends the [silverstripe-saml](https://github.com/silverstripe/silverstripe-saml) module for Silverstripe 4 to provide [Shibboleth](https://wiki.shibboleth.net/confluence/display/IDP30/Home) specific bindings, and allow the silverstripe-saml module to be used with a Shibboleth-backed identity provider (IdP).
 
-See the [silverstripe-activedirectory developer documentation](https://github.com/silverstripe/silverstripe-activedirectory/blob/master/docs/en/developer.md) for the majority of information on how to configure this module. Additional features specific to Shibboleth are noted below.
+See the [silverstripe-saml developer documentation](https://github.com/silverstripe/silverstripe-saml/tree/master/docs/en) for the majority of information on how to configure this module. Additional features specific to Shibboleth are noted below.
 
 ## Custom configuration
 
@@ -21,7 +21,7 @@ Do this by adding the following to your YML configuration:
 ```yaml
 # The below will use the eduPersonPrincipalName attribute to determine the NameID
 # See a full list of oid -> 'friendly name' mappings here: https://incommon.org/community-practices-and-standards/object-identifier-registrations/
-SAMLConfiguration:
+Madmatt\Shibboleth\SAMLConfiguration:
   nameid_override_attribute: "urn:oid:1.3.6.1.4.1.5923.1.1.1.6"
 ```
 
@@ -32,6 +32,6 @@ By default, the Shibboleth module does not change how the NameID is compared to 
 This may be useful in a situation where you are migrating from the old SilverStripe `auth_external` module, using the Apache `mod_shib` module (which populates `$_SERVER['REMOTE_USER']` by default).
 
 ```yaml
-SAMLConfiguration:
+Madmatt\Shibboleth\SAMLConfiguration:
   shib_unique_identifier_field: Email
 ```

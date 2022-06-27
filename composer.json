@@ -1,7 +1,7 @@
 {
   "name": "madmatt/silverstripe-shibboleth",
   "description": "Adds Shibboleth single-sign-on support to SilverStripe",
-  "type": "silverstripe-module",
+  "type": "silverstripe-vendormodule",
   "keywords": ["silverstripe", "shibboleth", "sso", "saml"],
   "license": "BSD-3-Clause",
   "authors": [
@@ -12,10 +12,11 @@
   ],
   "require": {
     "php": ">=7.1",
-    "silverstripe/framework": "^3.7",
-    "silverstripe/activedirectory": "^3"
+    "silverstripe/saml": "^2.0"
   },
-  "extra": {
-    "installer-name": "shibboleth"
+  "autoload": {
+    "psr-4": {
+      "Madmatt\\Shibboleth\\": "src"
+    }
   }
 }
